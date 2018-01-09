@@ -50,13 +50,21 @@ app.post('/del',urlencodedParser,(req, res)=>{
     let files = [];
     if(fs.existsSync(dirPath)) {
         files = fs.readdirSync(dirPath);
+
         files.forEach(function(file, index) {
-            var curPath = dirPath + "/" + file;
-            if(fs.statSync(curPath).isDirectory()) { // recurse
-               // deleteall(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
+            let ext = file.slice(file.indexOf('.')+1);
+            if (ext !== 'md'){
+                console.log(ext)
+                // if () {
+                console.log('删除文件的',file);
+                // }
+                var curPath = dirPath + "/" + file;
+                if(fs.statSync(curPath).isDirectory()) { // recurse
+                } else { // delete file
+                    fs.unlinkSync(curPath);
+                }
             }
+
         });
         //fs.rmdirSync(dirPath);
     }
