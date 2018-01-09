@@ -54,10 +54,6 @@ app.post('/del',urlencodedParser,(req, res)=>{
         files.forEach(function(file, index) {
             let ext = file.slice(file.indexOf('.')+1);
             if (ext !== 'md'){
-                console.log(ext)
-                // if () {
-                console.log('删除文件的',file);
-                // }
                 var curPath = dirPath + "/" + file;
                 if(fs.statSync(curPath).isDirectory()) { // recurse
                 } else { // delete file
