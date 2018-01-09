@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件下载</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <style>
+        .title1{
+            border: 1px solid gainsboro;
+            margin-bottom: 20px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="title1">
+    <h2>后台直接返回流文件(a标签，或者通过js跳转url，form表单提交都可以)</h2>
+    <div>但是a标签和js跳转不能用进行post请求，form表单可以</div>
+
+        <h3>a标签(相当于get的请求，接受后台返回的流文件，不保存在服务端)</h3>
+        <a href="/down/xlsx?id=1">标签下载(id = 1)</a>
+        <a href="/down/xlsx?id=2">标签下载(id = 2)</a>
+        <h3>form表单get提交</h3>
+        <form action="/down/xlsx" method="get">
+            <select name="id" id="">
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+            <input type="submit" value="提交">
+        </form>
+</div>
+<br>
+<br>
+<div class="title1">
+    <h2>后台先生成文件，保存起来再返回下载url，或者是流文件(1,先走ajax生成文件。2，再检测文件是否生成，若成功则进行下载)</h2>
+    <button id="down">ajax下载</button>
+    <button id="del">删除服务端Excel</button>
+</div>
+
+</body>
+   <script>
+       var timer;
+       function isExistFile(fileName) {
+           $.ajax({
+               type:'post',
+               url:"/exist",
+               data:{fileName:fileName},
+               success:function(data){
+                   if (!data.flag) {
+                       clearInterval(timer)
+                       //浏览器直接向文件url下载
+                       //window.location.href = data.url;
+                       //再次get请求后台接受流文件
+                       window.location.href = `/getDown?fileName=${data.fileName}`
+                   }
+
+               }});
+       }
+       $("#down").click(function(){
+           $.ajax({
+               type:'post',
+               url:"/search",
+               dataType:'json',
+               data:{id:2},
+               success:function(data){
+                timer = setInterval(isExistFile(data.fileName),100)
+           }});
+       });
+       $("#del").click(function() {
+           $.ajax({
+               type:'post',
+               url:"/del",
+               success:function(result){
+                   $("#div1").html(result);
+               }});
+       })
+   </script>
+</html>
